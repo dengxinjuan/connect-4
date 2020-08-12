@@ -8,7 +8,7 @@
 var WIDTH = 7;
 var HEIGHT = 6;
 
-var currPlayer = 1; // active player: 1 or 2
+var currPlayer = 2; // active player: 1 or 2
 var board = []; // array of rows, each row is array of cells  (board[y][x])
 
 /** makeBoard: create in-JS board structure:
@@ -18,12 +18,9 @@ var board = []; // array of rows, each row is array of cells  (board[y][x])
 function makeBoard() {
 
   // TODO: set "board" to empty HEIGHT x WIDTH matrix array
- 
- for(let i=0;i<HEIGHT;i++){
-    for(let j=0;j<WIDTH;j++){
-      board.push(null);
-    }
-  }
+  for (let y = 0; y < HEIGHT; y++) {
+		board.push(Array.from({ length: WIDTH }));
+	}
 }
 
 /** makeHtmlBoard: make HTML table and row of column tops. */
@@ -69,15 +66,32 @@ function findSpotForCol(x) {
 
 /** placeInTable: update DOM to place piece into HTML table of board */
 
+
+function makeDiv() {
+  let divElement = document.createElement('div');
+  divElement.classList.add('piece');
+
+  if (currPlayer === 1) {
+      divElement.classList.add('player1');
+  } else {
+      divElement.classList.add('player2');
+  }
+
+  return divElement;
+}
+
+
+
 function placeInTable(y, x) {
     // TODO: make a div and insert into correct table cell
-  const divElement = document.createElement('div');
-  divElement.classList.add('piece');
-  divElement.classList.add(`player${currPlayer}`);
-  divElement.style.top = -50 * (y + 2);
   const idLocation = document.getElementById(`${y}-${x}`);
-  idLocation.append(divElement);
+  idLocation.append(makeDiv());
 
+}
+
+function updatePlayer(){
+  let player=document.querySelector('h1');
+  player.innerText = `Current Player:${currPlayer} `;
 }
 
 /** endGame: announce game end */
@@ -101,21 +115,21 @@ function handleClick(evt) {
 
   // place piece in board and add to HTML table
   // TODO: add line to update in-memory board
-  board[y][x] = currPlayer;
   placeInTable(y, x);
+  board[y][x] = currPlayer;
 
   // check for win
-if (checkForWin()) {
-   return endGame(`Player ${currPlayer} won!`);
-  }
+  if (checkForWin()) {
+    return endGame(`GAME OVER! Player ${currPlayer} won!`);
+    }
 
 
 
   // check for tie
   // TODO: check if all cells in board are filled; if so call, call endGame
 
-  if(checkForTile()){
-   return endGame('all cell are filled!');
+  if (checkFortie()) {
+   return endGame('All is filled up!');
   }
 
 
@@ -123,22 +137,17 @@ if (checkForWin()) {
   // TODO: switch currPlayer 1 <-> 2
   switchPlayer();
 
+  updatePlayer();
+
 }
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
 
-function checkForTie() {
-  for (let y = 0; y < HEIGHT; y++) {
-      for (let x = 0; x < WIDTH; x++) {
-          if (board[y][x] === null) {
-              return false;
-          }
-      }
-  }
-  return true;
+function checkFortie(){
+  return board.every(row => row.every(cell => cell));
 }
 
 function switchPlayer(){
- return currPlayer === 1? currPlayer === 2 : currPlayer === 1;
+ return currPlayer === 1?  currPlayer = 2 : currPlayer = 1;
 }
 
 
